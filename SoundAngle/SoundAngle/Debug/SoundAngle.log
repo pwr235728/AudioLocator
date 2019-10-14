@@ -1,0 +1,6 @@
+﻿  source.cpp
+C:\Users\Kurat\source\repos\SoundAngle\SoundAngle\source.cpp(37,20): warning C4244:  "inicjowanie": konwersja z "double" do "int", możliwa utrata danych
+C:\Users\Kurat\source\repos\SoundAngle\SoundAngle\source.cpp(56,20): warning C4244:  "inicjowanie": konwersja z "double" do "int", możliwa utrata danych
+C:\Users\Kurat\source\repos\SoundAngle\SoundAngle\source.cpp(70,20): warning C4244:  "inicjowanie": konwersja z "double" do "int", możliwa utrata danych
+C:\Users\Kurat\source\repos\SoundAngle\SoundAngle\source.cpp(83,13): warning C4244:  "inicjowanie": konwersja z "double" do "int", możliwa utrata danych
+  SoundAngle.vcxproj -> C:\Users\Kurat\source\repos\SoundAngle\Debug\SoundAngle.exe
