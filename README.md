@@ -1,5 +1,5 @@
 # AudioLocator
-Urządzenie umożliwiające wykrycie kierunku nadchodzącego dźwięku.
+Urządzenie umożliwiające wykrycie kierunku nadchodzącego dźwięku o znanych parametrach (sinusoidlany, o znanej częstotliwość).
 
 Urządzenie składa się z:
 * dwóch mikrofonów
