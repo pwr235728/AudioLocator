@@ -49,7 +49,7 @@
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+extern uint32_t counter;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,24 +110,33 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
 	  if(AA_get_state() == DATA_STATUS_NEW)
 	  {
 		  AudioBuffer* audio_buff = AA_get_buffer();
+		  float mag = AL_get_magnitude(&ref_signal, audio_buff);
+		  Complex cmpl = AL_goertzel(audio_buff->ch_left_samples);
+		  float mag2 = cmpl_get_mag(cmpl);
+		  cmpl = AL_goertzel(audio_buff->ch_right_samples);
+		  mag2 += cmpl_get_mag(cmpl);
+
+
 		  float direction = AL_get_angle(&ref_signal, audio_buff);
 
-		 /* uint8_t tx_buff[16];
+		  uint8_t tx_buff[16];
 		  uint32_t tx_len;
-		  tx_len = sprintf(tx_buff, "$%f;", direction);
-		  HAL_UART_Transmit(&huart2, tx_buff, tx_len, 100);*/
-		  for(int i=0;i<SAMPLE_BUFFER_LEN; i++)
+		  if(mag < 50) direction = 0;
+		  tx_len = sprintf(tx_buff, "$%f %f;", mag, mag2);
+		  HAL_UART_Transmit(&huart2, tx_buff, tx_len, 100);
+		  /*for(int i=0;i<SAMPLE_BUFFER_LEN; i++)
 		  {
 			  uint8_t tx_buff[16];
 			  uint32_t tx_len;
 			  tx_len = sprintf(tx_buff, "$%f %f;", audio_buff->ch_left_samples[i], audio_buff->ch_right_samples[i]);
 			  HAL_UART_Transmit(&huart2, tx_buff, tx_len, 100);
-		  }
+		  }*/
 		  AA_release_buffer();
 	  }
     /* USER CODE END WHILE */
@@ -151,14 +160,15 @@ void SystemClock_Config(void)
   }
   LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
   LL_PWR_EnableOverDriveMode();
-  LL_RCC_HSE_Enable();
+  LL_RCC_HSI_SetCalibTrimming(16);
+  LL_RCC_HSI_Enable();
 
-   /* Wait till HSE is ready */
-  while(LL_RCC_HSE_IsReady() != 1)
+   /* Wait till HSI is ready */
+  while(LL_RCC_HSI_IsReady() != 1)
   {
     
   }
-  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_8, 360, LL_RCC_PLLP_DIV_2);
+  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSI, LL_RCC_PLLM_DIV_8, 180, LL_RCC_PLLP_DIV_2);
   LL_RCC_PLL_Enable();
 
    /* Wait till PLL is ready */
@@ -246,7 +256,7 @@ static void MX_ADC1_Init(void)
   ADC_REG_InitStruct.TriggerSource = LL_ADC_REG_TRIG_EXT_TIM2_TRGO;
   ADC_REG_InitStruct.SequencerLength = LL_ADC_REG_SEQ_SCAN_ENABLE_2RANKS;
   ADC_REG_InitStruct.SequencerDiscont = LL_ADC_REG_SEQ_DISCONT_DISABLE;
-  ADC_REG_InitStruct.ContinuousMode = LL_ADC_REG_CONV_CONTINUOUS;
+  ADC_REG_InitStruct.ContinuousMode = LL_ADC_REG_CONV_SINGLE;
   ADC_REG_InitStruct.DMATransfer = LL_ADC_REG_DMA_TRANSFER_UNLIMITED;
   LL_ADC_REG_Init(ADC1, &ADC_REG_InitStruct);
   LL_ADC_REG_SetFlagEndOfConversion(ADC1, LL_ADC_REG_FLAG_EOC_SEQUENCE_CONV);
